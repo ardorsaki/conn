@@ -35,6 +35,7 @@ public class SendResponseThread extends Thread {
 	@Override
 	public void run() {
 		try {
+			//多个线程take
 			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 			LinkedBlockingQueue<String> bq = SocketServiceStarter.sendRespMap.get(k);
 			while (!Thread.currentThread().isInterrupted()) {
@@ -44,6 +45,20 @@ public class SendResponseThread extends Thread {
 				dos.flush();
 				logger.info("********** SendResponseThread send response:{} **********", response);
 			}
+			
+			//单个线程take,需要把serverSockets传入
+//			LinkedBlockingQueue<String> bq = SocketServiceStarter.sendRespMap.get(1);
+//			while (!Thread.currentThread().isInterrupted()) {
+//				String response = bq.take();
+//				String requestId = response.substring(0, 10);
+//				Socket socket = serverSockets.get(SocketServiceStarter.reqConSocketMap.remove(requestId));
+//				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+//				String head = StringUtil.rightAlignZero(response.length(), 8);
+//				dos.write((head + response).getBytes(TCPConstants.CHARSET_UTF8));
+//				dos.flush();
+//				logger.info("********** SendResponseThread send response:{} **********", response);
+//			}
+			
 		} catch (InterruptedException e) {
 			logger.info("**********	SendResponseThread was Interrupted **********");
 		} catch (IOException e) {

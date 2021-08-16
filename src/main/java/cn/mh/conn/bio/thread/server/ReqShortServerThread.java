@@ -56,9 +56,17 @@ public class ReqShortServerThread extends Thread {
 			dis.readFully(bodyBytes);
 			String response = new String(bodyBytes, TCPConstants.CHARSET_UTF8);
 			String requestId = response.substring(0, 10);
+			
 			//offer
 			Integer key = SocketServiceStarter.reqConSocketMap.remove(requestId);
 			SocketServiceStarter.sendRespMap.get(key).offer(response, socketConfig.getTimeOutVal(), TimeUnit.MICROSECONDS);
+			
+			//单个线程发送响应,仅使用一个队列监听
+//			Integer key = SocketServiceStarter.reqConSocketMap.get(requestId);
+//			boolean offered = SocketServiceStarter.sendRespMap.get(1).offer(response, socketConfig.getTimeOutVal(), TimeUnit.MICROSECONDS);
+//			if(!offered)
+//				SocketServiceStarter.reqConSocketMap.remove(requestId);
+			
 		} catch (InterruptedException e) {
 			logger.info("**********	ReqShortServerThread was Interrupted **********");
 		} catch (SocketTimeoutException e) {
